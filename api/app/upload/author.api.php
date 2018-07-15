@@ -54,7 +54,7 @@ class AuthorApi extends BaseAdmin {
 
             t('author')->rollback();
 
-            $this->error($e->getMessage());
+            $this->error($e->getMessage(),$e->getCode());
         }
 
         fclose($fp);

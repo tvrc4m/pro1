@@ -134,7 +134,7 @@ class DB extends Base{
 
         $result=mysqli_query($this->_link,$sql);
 
-        if(!$result) throw new Exception(mysqli_error($this->_link));
+        if(!$result) throw new Exception(mysqli_error($this->_link),$this->errno());
 
         $data=[];
 
@@ -569,15 +569,13 @@ class DB extends Base{
 
             if(!$status){
 
-                if(DEBUG){
-
+                if(defined('DEBUG') && DEBUG){
                     echo $sql.PHP_EOL;
                     var_export($params);
                     echo mysqli_stmt_error($stmt);
                     exit;
                 }
-                
-                throw new Exception('执行失败:'.$sql.':'.mysqli_stmt_error($stmt));
+                throw new Exception('执行失败:'.$sql.':'.mysqli_stmt_error($stmt),$this->errno());
             }
             
             mysqli_stmt_close($stmt);
@@ -585,7 +583,7 @@ class DB extends Base{
             return $select?$result:true;
         }
         
-        throw new Exception('sql解析错误:'.mysqli_error($this->_link));
+        throw new Exception('sql解析错误:'.mysqli_error($this->_link),$this->errno());
     }
 
     /**
@@ -621,6 +619,15 @@ class DB extends Base{
         if(!$this->_link || !mysqli_ping($this->_link)) $this->_connect();
 
         return true;
+    }
+
+    /**
+     * 返回错误码
+     * @return int
+     */
+    public function errno(){
+
+        return $this->_link?mysqli_errno($this->_link):0;
     }
     /**
      * 对特殊字符转义

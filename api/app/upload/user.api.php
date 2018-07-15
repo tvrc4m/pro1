@@ -60,7 +60,7 @@ class UserApi extends BaseAdmin {
 
             t('user')->rollback();
 
-            $this->error($e->getMessage());
+            $this->error($e->getMessage(),$e->getCode());
         }
 
         fclose($fp);
