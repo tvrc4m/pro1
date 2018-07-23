@@ -29,17 +29,28 @@ class ContentApi extends BaseAuth {
 
         $where=['author_id'=>['$in'=>$authors]];
 
-        if(!empty($content_ids)) $where['id']=['$nin'=>$content_ids];
+        // if(!empty($content_ids)) $where['id']=' NOT IN ('.implode(',', $content_id).')';
 
         $limit=[($page-1)*$limit,$limit];
 
         $contents=t('content')->where($where)->sort('id DESC')->limit($limit)->find();
 
-        foreach ($contents as $content) {
+        foreach ($contents as $index=>$content) {
             // 记录已经阅读过
             t('user_view')->insert(['user_id'=>$uid,'content_id'=>$content['id']]);
+            
+            $expired_time=strtotime('+30 days',$content['date_add'])-$content['date_add'];
+            if($expired_time<60){
+                $contents[$index]['expired_date']='剩余'.$expired_time.'秒';
+            }else if($expired_time<3600){
+                $contents[$index]['expired_date']='剩余'.ceil($expired_time/60).'分钟';
+            }elseif($expired_time<86400*3){
+                $contents[$index]['expired_date']='剩余'.ceil($expired_time/86400).'天';
+            }else{
+                $contents[$index]['expired_date']=date('Y-m-d',strtotime('+30 days',$content['date_add']));
+            }
         }
-
+  
         $this->ok($contents);
     }
 }

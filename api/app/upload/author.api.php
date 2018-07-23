@@ -22,7 +22,7 @@ class AuthorApi extends BaseAdmin {
 
                 if(empty(trim($line))) continue;
 
-                list($author_id,$author_name,$avatar,$content_id,$url,$password,$content_type)=explode('&&&&&',trim($line));
+                list($author_id,$author_name,$avatar,$content_id,$url,$password,$content_type,$content_desc)=explode('&&&&&',trim($line));
 
                 $author_id=trim($author_id);
                 $author_name=trim($author_name);
@@ -31,6 +31,7 @@ class AuthorApi extends BaseAdmin {
                 $url=trim($url);
                 $password=trim($password);
                 $content_type=trim($content_type);
+                $content_desc=trim($content_desc);
 
                 if(!preg_match('/^\d+$/',$author_id)) throw new Exception('作者id必须为整数', 1);
                 if(!preg_match('/^\d+$/',$content_id)) throw new Exception('内容id必须为整数', 1);
@@ -46,7 +47,7 @@ class AuthorApi extends BaseAdmin {
                 if($content_type=='I') $type=1;
                 elseif($content_type=='P') $type=2;
                 // 添加内容
-                t('content')->insert(['id'=>$content_id,'author_id'=>$author_id,'type'=>$type,'password'=>$password,'url'=>$url]);
+                t('content')->insert(['id'=>$content_id,'author_id'=>$author_id,'description'=>$content_desc,'type'=>$type,'password'=>$password,'url'=>$url]);
             }
 
             t('author')->commit();
