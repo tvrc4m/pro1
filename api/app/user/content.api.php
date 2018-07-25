@@ -38,6 +38,11 @@ class ContentApi extends BaseAuth {
         foreach ($contents as $index=>$content) {
             // 记录已经阅读过
             t('user_view')->insert(['user_id'=>$uid,'content_id'=>$content['id']]);
+
+            $author=t('author')->where(['id'=>$content['author_id']])->get();
+
+            $contents[$index]['author_name']=$author['name'];
+            $contents[$index]['author_avatar']=$author['avatar'];
             
             $expired_time=strtotime('+30 days',$content['date_add'])-$content['date_add'];
             if($expired_time<60){
