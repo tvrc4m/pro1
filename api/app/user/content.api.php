@@ -54,6 +54,8 @@ class ContentApi extends BaseAuth {
             }else{
                 $contents[$index]['expired_date']=date('Y-m-d',strtotime('+30 days',$content['date_add']));
             }
+
+            $contents[$index]['date_add']=date('Y-m-d H:i:s',$content['date_add']);
         }
   
         $this->ok($contents);

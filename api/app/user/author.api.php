@@ -24,6 +24,25 @@ class AuthorApi extends BaseAuth {
         if(empty($authors)) $this->ok();
 
         $authors=t('author')->where(['id'=>['$in'=>$authors]])->find();
+
+        foreach ($authors as $index=>$author) {
+
+            $bill=t('bill')->where(['user_id'=>$uid,'author_id'=>$author['id']])->sort('id DESC')->get();
+            
+            $expired_time=strtotime('+30 days',$bill['date_add'])-$bill['date_add'];
+            
+            if($expired_time<60){
+                $authors[$index]['expired_date']='剩余'.$expired_time.'秒';
+            }else if($expired_time<3600){
+                $authors[$index]['expired_date']='剩余'.ceil($expired_time/60).'分钟';
+            }elseif($expired_time<86400*3){
+                $authors[$index]['expired_date']='剩余'.ceil($expired_time/86400).'天';
+            }else{
+                $authors[$index]['expired_date']=date('Y-m-d',strtotime('+30 days',$author['date_add']));
+            }
+
+            $authors[$index]['date_add']=date('Y-m-d H:i:s',$author['date_add']);
+        }
         
         $this->ok($authors);
     }
