@@ -19,6 +19,6 @@ include_once(CORE.'base.router.php');
 // session_set_cookie_params(86400,'/',COOKIE_DOMAIN);
 session_start();
 
-$router=new Router($_GET['action']);
+$router=new Router($_SERVER['PATH_INFO']);
 
 $router->dispatch();

@@ -41,7 +41,7 @@ class UserApi extends BaseAdmin {
 
                 $user=t('user')->where(['phone'=>$phone])->get();
 
-                if(empty($user)) $user_id=t('user')->insert(['phone'=>$phone,'password'=>sha1($password)]);
+                if(empty($user)) $user_id=t('user')->insert(['phone'=>$phone,'password'=>$password]);
 
                 else $user_id=$user['id'];
 

@@ -78,10 +78,14 @@ class Router extends Base{
         $instance=new $classname();
 
         $instance->router=$this;
+        
+        $params=json_decode(isset($_POST['data'])?decrypt($_POST['data']):"[]",true);
 
-        $params=json_decode(file_get_contents("php://input"),true);
+        if($data===false || $data===null) $this->error('参数错误');
 
-        $params=array_merge((array)$params,$_GET,$_POST);
+        // unset($_POST['data']);
+        
+        // $params=array_merge($_GET,$_POST,$data);
         
         // $instance->call($params);
 

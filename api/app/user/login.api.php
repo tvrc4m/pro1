@@ -15,7 +15,7 @@ class LoginApi extends Base {
 
         if(empty($user)) $this->error('该手机号不存在');
 
-        if($user['password']!=sha1($password)) $this->error('密码错误');
+        if($user['password']!=$password) $this->error('密码错误');
 
         $token=sha1(base64_encode($phone.'='.time()));
         

@@ -7,6 +7,8 @@ class Base {
 
     protected function ok($data=[]){
 
+        $data=encrypt(json_encode($data));
+
         exit(json_encode(['err_no'=>0,'err_msg'=>'','data'=>$data]));
     }
 
@@ -51,5 +53,7 @@ class BaseAdmin extends Base{
         $result=t('device')->where(['device_no'=>$device])->get();
 
         if(empty($result)) $this->error('没有权限操作',1001);
+
+        $this->crypto_key=$result['crypto_key'];
     }
 }
