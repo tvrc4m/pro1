@@ -3,6 +3,7 @@ CREATE TABLE oa_author(
     id int AUTO_INCREMENT PRIMARY KEY,
     name varchar(32) NOT NULL COMMENT '作者名称',
     avatar varchar(256) COMMENT '头像地址',
+    status int DEFAULT 1 COMMENT '作者状态',
     date_add int
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 -- 作者内容
@@ -56,5 +57,45 @@ CREATE TABLE oa_device(
     date_add int
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
 INSERT INTO oa_device (device_no) values ('a76b55e1c7aa804');
 INSERT INTO oa_setting (name,value) values ('app_load_image','http://img4.duitang.com/uploads/blog/201404/06/20140406232455_m5XVy.jpeg');
+
+DROP TABLE IF EXISTS oa_code;
+
+CREATE TABLE oa_code(
+    id int AUTO_INCREMENT PRIMARY KEY,
+    code varchar(16) NOT NULL COMMENT '订阅码',
+    status tinyint DEFAULT 0 COMMENT '0:未使用 1:已使用 -1:已过期未使用',
+    user_id int DEFAULT 0 COMMENT '关联的用户',
+    year int COMMENT '年份,不足1年为0。按创建日期到过期日期算',
+    month int COMMENT '月份',
+    date_expired int COMMENT '过期日期',
+    date_add int
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS oa_author_code;
+-- 作者关联的邀请码
+CREATE TABLE oa_author_code(
+    id int AUTO_INCREMENT PRIMARY KEY,
+    code_id varchar(16) NOT NULL COMMENT '订阅码',
+    author_id int NOT NULL DEFAULT 0 COMMENT '作者id',
+    date_add int
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE oa_app_device(
+   
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- CREATE TABLE oa_
+
+CREATE TABLE oa_admin(
+    id int AUTO_INCREMENT PRIMARY KEY,
+    nickname varchar(11) COMMENT '昵称',
+    password varchar(64) COMMENT '密码',
+    token varchar(64) DEFAULT '' COMMENT '登录token',
+    date_add int
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+

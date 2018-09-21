@@ -70,19 +70,28 @@ class Router extends Base{
         // $classpath=API.$module.'/'.$controller.'.api.php';
 
         // if(!file_exists($classpath)) $this->error('未找到指定类');
+        // 
+        if($module=='admin'){
+
+            $params=array_merge($_GET,$_POST);
+        }else{
+
+            $params=json_decode(isset($_POST['data'])?decrypt($_POST['data']):"[]",true);
+        }
+
+        if($params===false || $params===null) $this->error('参数错误');
+
+        $params['device']=$_REQUEST['device'];
 
         include_once $classpath;
 
         $classname=ucfirst($controller).'Api';
 
-        $instance=new $classname();
+        $instance=new $classname($params);
 
         $instance->router=$this;
         
-        $params=json_decode(isset($_POST['data'])?decrypt($_POST['data']):"[]",true);
-
-        if($data===false || $data===null) $this->error('参数错误');
-
+        // print_r($instance->router);exit;
         // unset($_POST['data']);
         
         // $params=array_merge($_GET,$_POST,$data);

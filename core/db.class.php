@@ -416,6 +416,8 @@ class DB extends Base{
             
             foreach ($where as $name=>$value) {
 
+                $break=false;
+
                 if(strpos($name, '.')!==false) $name=$this->prefix.$name;
 
                 if(is_array($value)){
@@ -430,13 +432,13 @@ class DB extends Base{
                         case '$lt':$sql.=$name.'<? AND ';break;
                         case '$lte':$sql.=$name.'<=? AND ';break;
                         case '$inc':$sql.=$name.'='.$name.'+? AND ';break;
-                        case '$like':$sql.=$name.' LIKE ? AND ';$v='%'.$v.'% AND ';break;
-                        case '$nin':$sql.=$name.' NOT IN (?) AND ';break;
+                        case '$like':$sql.=$name.' LIKE ? AND ';$v='%'.$v.'%';break;
+                        case '$nin':$sql.=$name.' NOT IN ('.$v.') AND ';$break=true;break;
                         case '$not':$sql.=$name.'!=? AND ';break;
-                        default:$sql.=$name.' IN (?) AND ';break;
+                        default:$sql.=$name.' IN ('.$v.') AND ';$break=true;break;
                     }
                     
-                    $this->_bind_params($name,$v,$strtype,$params);
+                    !$break && $this->_bind_params($name,$v,$strtype,$params);
                 }else{
 
                     $sql.=$name.'=? AND ';
@@ -530,9 +532,9 @@ class DB extends Base{
                 call_user_func_array('mysqli_stmt_bind_param', $refs);
             }
 
-            $status=mysqli_stmt_execute($stmt);
-
-            if($status && $select){
+            $_status=mysqli_stmt_execute($stmt);
+            
+            if($_status && $select){
 
                 $meta=mysqli_stmt_result_metadata($stmt);
 
@@ -567,15 +569,17 @@ class DB extends Base{
                 }
             }
 
-            if(!$status){
-
+            if(!$_status){
+                
                 if(defined('DEBUG') && DEBUG){
                     echo $sql.PHP_EOL;
+                    echo $type.PHP_EOL;
                     var_export($params);
-                    echo mysqli_stmt_error($stmt);
+                    print_r(mysqli_stmt_error($stmt));
+                    print_r(mysqli_stmt_error_list($stmt));
                     exit;
                 }
-                throw new Exception('执行失败:'.$sql.':'.mysqli_stmt_error($stmt),$this->errno());
+                throw new Exception('执行失败',$this->errno());
             }
             
             mysqli_stmt_close($stmt);

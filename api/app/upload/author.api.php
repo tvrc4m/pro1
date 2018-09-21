@@ -1,6 +1,6 @@
 <?php
 
-class AuthorApi extends BaseAdmin {
+class AuthorApi extends BaseAdminPhone {
 
     /**
      * 登录

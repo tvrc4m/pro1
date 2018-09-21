@@ -16,24 +16,24 @@ function t($table){
 
 function encrypt($str){
 
-    return @openssl_encrypt($str,CRYPT_CIPHER,CRYPT_KEY, 0);
+    return base64_encode(@openssl_encrypt($str,CRYPT_CIPHER,CRYPT_KEY, 1,CRTYP_IV));
 }
 
 function decrypt($str){
 
-    return @openssl_decrypt($str,CRYPT_CIPHER,CRYPT_KEY, 0);
+    return @openssl_decrypt($str,CRYPT_CIPHER,CRYPT_KEY, 0,CRTYP_IV);
 }
 
+// define('CRYPT_KEY','com.secret.hidepng.superman');
+// define('CRTYP_IV', '01234567');
+// define('CRYPT_CIPHER','des-ede3-cbc');
 
-define('CRYPT_KEY','5b6953f1d4c64');
-define('CRYPT_CIPHER','AES-128-CBC');
-
-$str= encrypt(json_encode(['phone'=>'15763951212','password'=>'83656adb4c9caafec3ec0c84223fafec457adaba']));
-$str='dsJMAoQA\/Lm+aZ7305YjL2NIpjSqXAoMeam1ljuzYp7hGsy7QzNikOCSfmDvuoDcbFkRBszDwJAUTAYalAC9bQ==';
-$str="";
-var_dump(json_decode($str,true));exit;
-// echo $str;
-$result=decrypt($str);
-echo $result;
-var_dump($result);
+// // $str= encrypt("111111");
+// // $str='dsJMAoQA\/Lm+aZ7305YjL2NIpjSqXAoMeam1ljuzYp7hGsy7QzNikOCSfmDvuoDcbFkRBszDwJAUTAYalAC9bQ==';
+// $str="b+y1bC3Cu2ikHP8nFsUgm/9I4UpSQ23YZuIrpqFg+EnRGVv+LVBA6lUZisHh JzmA";
+// // var_dump(json_decode($str,true));exit;
+// // echo $str;
+// $result=decrypt($str);
+// // echo $result;
+// var_dump($result);
 // print_r(json_decode($result,true));
