@@ -88,7 +88,7 @@ class CodeApi extends BaseAdminAuth {
 
         foreach ($authors as $author) {
             
-            $code['authors'][]=$author['id'];
+            $code['authors'][]=$author['author_id'];
         }
 
         $this->ok($code);
@@ -118,7 +118,7 @@ class CodeApi extends BaseAdminAuth {
 
                 foreach ($authors as $author_id) {
                     
-                    t('author_code')->insert(['author_id'=>$author_id,'code_id'=>$code_id]);
+                    t('author_code')->insert(['author_id'=>$author_id,'code_id'=>$code_id,'code'=>$code_name]);
                 }
             }
 
@@ -184,7 +184,7 @@ class CodeApi extends BaseAdminAuth {
 
             $timestamp=strtotime($expired_date);
 
-            if(time()>$timestamp) $this->error('过期时间应大于今天');
+            // if(time()>$timestamp) $this->error('过期时间应大于今天');
         }
 
         try{
@@ -208,7 +208,7 @@ class CodeApi extends BaseAdminAuth {
 
                     foreach ($authors as $author_id) {
                         
-                        t('author_code')->insert(['author_id'=>$author_id,'code_id'=>$code_id]);
+                        t('author_code')->insert(['author_id'=>$author_id,'code_id'=>$code_id,'code'=>$code]);
                     }
                 }
             }
@@ -238,7 +238,7 @@ class CodeApi extends BaseAdminAuth {
 
         $timestamp=strtotime($expired_date);
 
-        if(time()>$timestamp) $this->error('过期时间应大于今天');
+        // if(time()>$timestamp) $this->error('过期时间应大于今天');
 
         try{
             t('code')->start();
@@ -276,6 +276,24 @@ class CodeApi extends BaseAdminAuth {
         if($detail['user_id']) $this->error('该邀请码已关联用户');
 
         t('code')->where(['id'=>$code_id])->update(['user_id'=>$user_id]);
+        t('author_code')->where(['code_id'=>$code_id])->update(['user_id'=>$user_id]);
+
+        $this->ok();
+    }
+
+    public function unassign($params){
+
+        $user_id=$params['uid'];
+        $code_id=$params['code_id'];
+
+        if(empty($user_id) || empty($code_id)) $this->error("参数不全");
+
+        $detail=t('code')->where(['id'=>$code_id,'user_id'=>$user_id])->get();
+
+        if(empty($detail)) $this->error('邀请码不存在');
+
+        t('code')->where(['id'=>$code_id])->update(['user_id'=>0]);
+        t('author_code')->where(['code_id'=>$code_id])->update(['user_id'=>0]);
 
         $this->ok();
     }
@@ -288,6 +306,41 @@ class CodeApi extends BaseAdminAuth {
 
         // t('code')->where(['id'=>$code_id])->update(['status'=>0]);
         t('code')->delete(['id'=>$code_id]);
+
+        $this->ok();
+    }
+
+    public function multidel($params){
+
+        $codes=$params['codes'];
+
+        if(empty($codes)) $this->error('参数不全');
+
+        if(!is_array($codes)) $this->error('参数不对');
+
+        $codes=array_unique($codes);
+
+        t('code')->delete(['id'=>['$in'=>$codes]]);
+
+        $this->ok();
+    }
+
+    public function changeexipred($params){
+
+        $code_id=$params['code_id'];
+        $date_expired=$params['expired_date'];
+
+        if(empty($code_id) || empty($date_expired)) $this->error('参数不全');
+
+        $code=t('code')->where(['id'=>$code_id])->get();
+
+        if(empty($code)) $this->error('邀请码不存在');
+
+        $timestamp=strtotime($date_expired);
+        $year=date('Y',$timestamp);
+        $month=date('m',$timestamp);
+
+        t('code')->where(['id'=>$code_id])->update(['date_expired'=>$timestamp,'year'=>$year,'month'=>$month]);
 
         $this->ok();
     }

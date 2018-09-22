@@ -78,8 +78,10 @@ DROP TABLE IF EXISTS oa_author_code;
 -- 作者关联的邀请码
 CREATE TABLE oa_author_code(
     id int AUTO_INCREMENT PRIMARY KEY,
-    code_id varchar(16) NOT NULL COMMENT '订阅码',
+    code_id int NOT NULL COMMENT '订阅码',
+    code varchar(16) NOT NULL COMMENT '邀请码',
     author_id int NOT NULL DEFAULT 0 COMMENT '作者id',
+    user_id int DEFAULT 0 COMMENT '关联的用户id',
     date_add int
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

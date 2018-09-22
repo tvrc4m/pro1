@@ -92,6 +92,43 @@ class IndexApi extends BaseAdminAuth{
         $this->ok();
     }
 
+    public function multiadd($params){
+
+        $contents=$params['contents'];
+
+        if(empty($contents)) $this->error('内容为空');
+
+        try{
+
+            t('content')->start();
+
+            foreach ($contents as $content) {
+            
+                $author_id=$content['author_id'];
+                $type=$content['type'];
+                $password=$content['password'];
+                $url=$content['url'];
+
+                if(empty($author_id) || empty($type) || empty($url)) throw new Exception('参数不全', 1);
+
+                $content=t('content')->where(['url'=>$url])->get();
+
+                if(!empty($content)) throw new Exception($url.'该内容已存在', 1);
+
+                t('content')->insert(['author_id'=>$author_id,'type'=>$type,'url'=>$url,'password'=>$password]);
+            }
+
+            t('content')->commit();
+        }catch(Exception $e){
+
+            t('content')->rollback();
+
+            $this->error($e->getMessage());
+        }
+
+        $this->ok([]);
+    }
+
     public function _get_author($author_id){
 
         static $authors=[];

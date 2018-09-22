@@ -435,6 +435,7 @@ class DB extends Base{
                         case '$like':$sql.=$name.' LIKE ? AND ';$v='%'.$v.'%';break;
                         case '$nin':$sql.=$name.' NOT IN ('.$v.') AND ';$break=true;break;
                         case '$not':$sql.=$name.'!=? AND ';break;
+                        case '$in':$sql.=$name.' IN ('.$v.') AND ';$break=true;break;
                         default:$sql.=$name.' IN ('.$v.') AND ';$break=true;break;
                     }
                     

@@ -102,4 +102,53 @@ class IndexApi extends BaseAdminAuth {
 
         $this->ok($users);
     }
+    /**
+     * 用户订阅的作者
+     * @param  array $params 
+     * @return 
+     */
+    public function author($params){
+
+        $user_id=$params['user_id'];
+        $page=$params['page'];
+        $limit=20;
+        $page<1 && $page=1;
+
+        if(empty($user_id)) $this->ok('未指定用户');
+        
+        $result=t('author_code')->field('author_id,GROUP_CONCAT(code_id) as codes')->where(['user_id'=>$user_id])->limit([($page-1)*$limit,$limit])->group('author_id')->find();
+
+        if($result){
+
+            $author_ids=array_column($result, 'author_id');
+
+            $authors=t('author')->where(['id'=>['$in'=>$author_ids],'status'=>1])->find();
+
+            foreach ($authors as &$author) {
+
+                $author['create_time']=date('Y-m-d',$author['date_add']);
+                
+                foreach ($result as $res) {
+                    
+                    if($author['id']==$res['author_id']){
+
+                        $codes=explode(',', $res['codes']);
+
+                        foreach ($codes as $code_id) {
+                            
+                            $code=t('code')->where(['id'=>$code_id])->get();
+
+                            $code['expired_time']=date('Y-m-d',$code['date_expired']);
+
+                            $author['codes'][]=$code;
+                        }
+                    }
+                }
+            }
+        }
+
+        $total=t('author_code')->where(['user_id'=>$user_id])->group('author_id')->count();
+
+        $this->ok(['authors'=>$authors,'total'=>$total]);
+    }
 }
