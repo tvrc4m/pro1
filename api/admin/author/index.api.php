@@ -21,6 +21,10 @@ class IndexApi extends BaseAdminAuth {
             
             $d['create_time']=date('Y-m-d H:i:s',$d['date_add']);
 
+            $unused_count=t('author_code')->where(['author_id'=>$d['id'],'user_id'=>0])->count();
+
+            $d['unused_count']=$unused_count;
+
             $result[]=$d;
         }
 

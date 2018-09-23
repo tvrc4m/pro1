@@ -101,3 +101,4 @@ CREATE TABLE oa_admin(
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+ALTER TABLE oa_author ADD status tinyint DEFAULT 1;
