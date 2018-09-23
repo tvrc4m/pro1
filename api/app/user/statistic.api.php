@@ -15,9 +15,9 @@ class StatisticApi extends BaseAuth {
 
         $register_day=ceil((time()-$date_add)/3600*24);
 
-        $bill=t('bill')->field(['count(1) as count'])->where(['type'=>3])->get();
+        $subscribe=t('author_code')->field('count(DISTINCT author_id) as count')->get();
 
-        $data=['register_day'=>$register_day,'subscribe_count'=>$bill['count']];
+        $data=['register_day'=>$register_day,'subscribe_count'=>$subscribe['count']];
         
         $this->ok($data);
     }

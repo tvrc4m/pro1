@@ -39,7 +39,7 @@ class AuthorApi extends BaseAdminPhone {
 
                 $author=t('author')->where(['id'=>$author_id])->get();
 
-                if(empty($author)) t('author')->insert(['id'=>$author_id,'name'=>$author_name,'avatar'=>$avatar]);
+                if(empty($author)) t('author')->insert(['id'=>$author_id,'status'=>1,'name'=>$author_name,'avatar'=>$avatar]);
 
                 $content_type=strtoupper($content_type);
 

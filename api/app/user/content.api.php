@@ -15,11 +15,41 @@ class ContentApi extends BaseAuth {
         $page=$params['page']??1;
         $limit=20;
 
-        $last_time=strtotime('-30 day');
-        // 30天有效期
-        $bills=t('bill')->field('author_id')->where(['user_id'=>$uid,'date_add'=>['$gt'=>$last_time]])->find();
+        $codes=t('code')->where(['user_id'=>$uid,'date_expired'=>['$gt'=>time()]])->find();
 
-        $authors=array_filter(array_unique(array_column($bills,'author_id')));
+        if(empty($codes)) $this->ok();
+
+        $authors=[];
+        $author_expired=[];
+
+        foreach ($codes as $code) {
+            
+            $author_codes=t('author_code')->where(['code_id'=>$code['id']])->find();
+
+            foreach ($author_codes as $author_code) {
+                
+                $authors[]=$author_code['author_id'];
+
+                $date_expired=$code['date_expired'];
+
+                $expired_time=$code['date_expired']-time();
+
+                if($expired_time<60){
+                    $left='剩余'.$expired_time.'秒';
+                }else if($expired_time<3600){
+                    $left='剩余'.ceil($expired_time/60).'分钟';
+                }elseif($expired_time<86400*3){
+                    $left='剩余'.ceil($expired_time/86400).'天';
+                }else{
+                    $left=date('Y-m-d',$code['date_expired']);
+                }
+
+                $author_expired[$author_code['author_id']]=$left;
+            }
+
+        }
+
+        $authors=array_unique($authors);
         
         if(empty($authors)) $this->ok();
 
@@ -43,17 +73,7 @@ class ContentApi extends BaseAuth {
 
             $contents[$index]['author_name']=$author['name'];
             $contents[$index]['author_avatar']=$author['avatar'];
-            
-            $expired_time=strtotime('+30 days',$content['date_add'])-$content['date_add'];
-            if($expired_time<60){
-                $contents[$index]['expired_date']='剩余'.$expired_time.'秒';
-            }else if($expired_time<3600){
-                $contents[$index]['expired_date']='剩余'.ceil($expired_time/60).'分钟';
-            }elseif($expired_time<86400*3){
-                $contents[$index]['expired_date']='剩余'.ceil($expired_time/86400).'天';
-            }else{
-                $contents[$index]['expired_date']=date('Y-m-d',strtotime('+30 days',$content['date_add']));
-            }
+            $contents[$index]['expired_date']=$author_expired[$content['author_id']];
 
             $contents[$index]['date_add']=date('Y-m-d H:i:s',$content['date_add']);
         }

@@ -15,35 +15,49 @@ class AuthorApi extends BaseAuth {
         $page=$params['page']??1;
         $limit=20;
 
-        $last_time=strtotime('-30 day');
-        // 30天有效期
-        $bills=t('bill')->where(['user_id'=>$uid,'date_add'=>['$gt'=>$last_time]])->find();
-        
-        $authors=array_filter(array_unique(array_column($bills,'author_id')));
-        
-        if(empty($authors)) $this->ok();
+        $codes=t('code')->where(['user_id'=>$uid,'date_expired'=>['$gt'=>time()]])->find();
 
-        $authors=t('author')->where(['id'=>['$in'=>$authors]])->find();
+        if(empty($codes)) $this->ok();
 
-        foreach ($authors as $index=>$author) {
+        $authors=[];
+        $author_expired=[];
 
-            $bill=t('bill')->where(['user_id'=>$uid,'author_id'=>$author['id']])->sort('id DESC')->get();
+        foreach ($codes as $code) {
             
-            $expired_time=strtotime('+30 days',$bill['date_add'])-$bill['date_add'];
-            
-            if($expired_time<60){
-                $authors[$index]['expired_date']='剩余'.$expired_time.'秒';
-            }else if($expired_time<3600){
-                $authors[$index]['expired_date']='剩余'.ceil($expired_time/60).'分钟';
-            }elseif($expired_time<86400*3){
-                $authors[$index]['expired_date']='剩余'.ceil($expired_time/86400).'天';
-            }else{
-                $authors[$index]['expired_date']=date('Y-m-d',strtotime('+30 days',$author['date_add']));
+            $author_codes=t('author_code')->where(['code_id'=>$code['id']])->find();
+
+            foreach ($author_codes as $author_code) {
+                
+                $authors[]=$author_code['author_id'];
+
+                $date_expired=$code['date_expired'];
+
+                $expired_time=$code['date_expired']-time();
+
+                if($expired_time<60){
+                    $left='剩余'.$expired_time.'秒';
+                }else if($expired_time<3600){
+                    $left='剩余'.ceil($expired_time/60).'分钟';
+                }elseif($expired_time<86400*3){
+                    $left='剩余'.ceil($expired_time/86400).'天';
+                }else{
+                    $left=date('Y-m-d',$code['date_expired']);
+                }
+
+                $author_expired[$author_code['author_id']]=$left;
             }
 
-            $authors[$index]['date_add']=date('Y-m-d H:i:s',$author['date_add']);
         }
-        
-        $this->ok($authors);
+
+        $result=t('author')->where(['id'=>['$in'=>$authors]])->find();
+
+        foreach ($result as &$res) {
+
+            $res['expired_date']=$author_expired[$res['id']];
+            $res['date_add']=date('Y-m-d H:i:s',$author['date_add']);
+            
+        }
+         
+        $this->ok($result);
     }
 }
