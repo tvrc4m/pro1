@@ -344,4 +344,16 @@ class CodeApi extends BaseAdminAuth {
 
         $this->ok();
     }
+
+    public function clearexpired(){
+
+        $expired=t('code')->field('id')->where(['date_expired'=>['$lt'=>time()]])->find();
+
+        $codes=array_column($expired, 'id');
+
+        t('code')->delete(['id'=>['$in'=>$codes]]);
+        t('author_code')->delete(['code_id'=>['$in'=>$codes]]);
+
+        $this->ok();
+    }
 }
