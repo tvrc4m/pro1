@@ -24,6 +24,7 @@ class IndexApi extends BaseAdminAuth{
             $content['author_name']=$author['name'];
 
             $content['create_time']=date('Y-m-d',$content['date_add']);
+            $content['pub_time']=date('Y-m-d',$content['date_pub']);
         }
 
         $total=t('content')->where($where)->count();
@@ -41,6 +42,8 @@ class IndexApi extends BaseAdminAuth{
 
         if(empty($content)) $this->error('内容不存在');
 
+        $content['pub_time']=date('Y-m-d H:i:s',$content['date_pub']);
+
         $this->ok($content);
     }
 
@@ -50,6 +53,9 @@ class IndexApi extends BaseAdminAuth{
         $type=$params['type'];
         $password=$params['password'];
         $url=$params['url'];
+        $pub_time=$params['pub_time'];
+
+        empty($pub_time) && $pub_time=date('Y-m-d H:i:s');
 
         if(empty($author_id) || empty($type) || empty($url)) $this->error("参数不全");
 
@@ -57,7 +63,7 @@ class IndexApi extends BaseAdminAuth{
 
         if(!empty($content)) $this->error("该内容已存在");
 
-        t('content')->insert(['author_id'=>$author_id,'type'=>$type,'url'=>$url,'password'=>$password]);
+        t('content')->insert(['author_id'=>$author_id,'type'=>$type,'url'=>$url,'password'=>$password,'date_pub'=>strtotime($pub_time)]);
 
         $this->ok();
     }
@@ -69,6 +75,9 @@ class IndexApi extends BaseAdminAuth{
         $type=$params['type'];
         $password=$params['password'];
         $url=$params['url'];
+        $pub_time=$params['pub_time'];
+
+        empty($pub_time) && $pub_time=date('Y-m-d H:i:s');
 
         if(empty($content_id) || empty($author_id) || empty($type) || empty($url)) $this->error("参数不全");
 
@@ -76,7 +85,7 @@ class IndexApi extends BaseAdminAuth{
 
         if(empty($content)) $this->error("该内容不存在");
 
-        t('content')->where(['id'=>$content_id])->update(['author_id'=>$author_id,'type'=>$type,'url'=>$url,'password'=>$password]);
+        t('content')->where(['id'=>$content_id])->update(['author_id'=>$author_id,'type'=>$type,'url'=>$url,'password'=>$password,'date_pub'=>strtotime($pub_time)]);
 
         $this->ok();
     }
@@ -108,6 +117,9 @@ class IndexApi extends BaseAdminAuth{
                 $type=$content['type'];
                 $password=$content['password'];
                 $url=$content['url'];
+                $pub_time=$params['pub_time'];
+
+                empty($pub_time) && $pub_time=date('Y-m-d H:i:s');
 
                 if(empty($author_id) || empty($type) || empty($url)) throw new Exception('参数不全', 1);
 
@@ -115,7 +127,7 @@ class IndexApi extends BaseAdminAuth{
 
                 if(!empty($content)) throw new Exception($url.'该内容已存在', 1);
 
-                t('content')->insert(['author_id'=>$author_id,'type'=>$type,'url'=>$url,'password'=>$password]);
+                t('content')->insert(['author_id'=>$author_id,'type'=>$type,'url'=>$url,'password'=>$password,'date_pub'=>strtotime($pub_time)]);
             }
 
             t('content')->commit();

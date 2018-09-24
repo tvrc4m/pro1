@@ -52,10 +52,12 @@ class IndexApi extends BaseAdminAuth {
 
         $name=$params['name'];
         $avatar=$params['avatar'];
+        $ad_img=$params['ad_img'];
+        $ad_redirect=$params['ad_redirect'];
 
-        if(empty($name) || empty($avatar)) $this->error("参数不全");
+        if(empty($name) || empty($avatar) || empty($ad_img) || empty($ad_redirect)) $this->error("参数不全");
 
-        t('author')->insert(['name'=>$name,'avatar'=>$avatar]);
+        t('author')->insert(['name'=>$name,'avatar'=>$avatar,'ad_img'=>$ad_img,'ad_redirect'=>$ad_redirect]);
 
         $this->ok();
     }
