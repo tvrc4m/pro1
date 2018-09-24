@@ -13,7 +13,12 @@ class ContentApi extends BaseAuth {
 
         $uid=$this->user['id'];
         $page=$params['page']??1;
+        $author=strtolower($params['author']);
         $limit=20;
+
+        if(empty($author)) $this->ok();
+
+        if($author!='all') $where=['author_id'=>['$in'=>explode(',', $author)]]; 
 
         $codes=t('code')->where(['user_id'=>$uid,'date_expired'=>['$gt'=>time()]])->find();
 
@@ -23,8 +28,10 @@ class ContentApi extends BaseAuth {
         $author_expired=[];
 
         foreach ($codes as $code) {
+
+            $where['code_id']=$code['id'];
             
-            $author_codes=t('author_code')->where(['code_id'=>$code['id']])->find();
+            $author_codes=t('author_code')->where($where)->find();
 
             foreach ($author_codes as $author_code) {
                 
