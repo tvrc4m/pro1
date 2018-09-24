@@ -71,13 +71,13 @@ class Router extends Base{
 
         // if(!file_exists($classpath)) $this->error('未找到指定类');
         // 
-        if($module=='admin'){
+        // if($module=='admin'){
 
             $params=array_merge($_GET,$_POST);
-        }else{
+        // }else{
 
-            $params=json_decode(isset($_POST['data'])?decrypt($_POST['data']):"[]",true);
-        }
+            // $params=json_decode(isset($_POST['data'])?decrypt($_POST['data']):"[]",true);
+        // }
 
         if($params===false || $params===null) $this->error('参数错误');
 

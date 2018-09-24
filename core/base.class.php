@@ -9,7 +9,7 @@ class Base {
 
     protected function ok($data=[]){
 
-        $data=encrypt(json_encode($data));
+        // $data=encrypt(json_encode($data));
 
         exit(json_encode(['err_no'=>0,'err_msg'=>'','datahide'=>$data]));
     }

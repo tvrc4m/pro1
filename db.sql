@@ -103,6 +103,8 @@ CREATE TABLE oa_admin(
 
 ALTER TABLE oa_author ADD status tinyint DEFAULT 1;
 
-ALTER TABLE oa_author ADD ad_img varchar(255) DEFAULT '',ADD ad_redirect varchar(255) DEFAULT '';
+ALTER TABLE oa_author ADD ad_img varchar(255) DEFAULT '',ADD add_redirect varchar(255) DEFAULT '';
 ALTER TABLE oa_content ADD date_pub int COMMENT '发布日期';
+
+ALTER TABLE oa_setting add label varchar(64) NOT NULL COMMENT '说明';
 

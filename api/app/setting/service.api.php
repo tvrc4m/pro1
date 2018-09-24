@@ -14,22 +14,23 @@ class ServiceApi extends Base {
 
         if(!empty($author)){
 
-            $author=explode(',', $author);
+            $authors=explode(',', $author);
 
-            $author_id=$author[0];
+            $author_id=min($authors);
 
             $author=t('author')->where(['id'=>$author_id])->get();
 
-            $data['ad_img']=$author['ad_img'];
-            $data['ad_redirect']=$author['ad_redirect'];
+            $data['author']['ad_img']=$author['ad_img'];
+            $data['author']['ad_redirect']=$author['ad_redirect'];
         }
 
-        $setting=t('setting')->where(['name'=>'app_load_image'])->get();
+        $setting_ad_img=t('setting')->where(['name'=>'ad_img'])->get();
+        $setting_ad_redirect=t('setting')->where(['name'=>'ad_redirect'])->get();
 
-        if(empty($setting)) $this->ok();
+        $data['site']['ad_img']=$setting_ad_img['value'];
+        $data['site']['ad_redirect']=$setting_ad_redirect['value'];
 
-        // $data['']
 
-        $this->ok(['images'=>explode(',', $setting['value'])]);
+        $this->ok($data);
     }
 }
