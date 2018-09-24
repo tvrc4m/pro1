@@ -66,8 +66,8 @@ class ContentApi extends BaseAuth {
 
         $where=['author_id'=>['$in'=>$authors]];
 
-        // if(!empty($content_ids)) $where['id']=' NOT IN ('.implode(',', $content_id).')';
-
+        if(!empty($content_ids)) $where['id']=' NOT IN ('.implode(',', $content_id).')';
+        
         $limit=[($page-1)*$limit,$limit];
 
         $contents=t('content')->where($where)->sort('id DESC')->limit($limit)->find();
