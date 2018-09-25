@@ -13,6 +13,7 @@ CREATE TABLE oa_content(
     type tinyint COMMENT '1:图文 2:视频',
     password varchar(64) COMMENT '内容密码',
     url varchar(521) DEFAULT '' COMMENT '图片链接', 
+    description varchar(5000) DEFAULT '' COMMENT '内容描述',
     date_add int
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -65,13 +65,13 @@ class ContentApi extends BaseAuth {
         $content_ids=array_filter(array_unique(array_column($views,'content_id')));
 
         $where=['author_id'=>['$in'=>$authors]];
-
-        if(!empty($content_ids)) $where['id']=' NOT IN ('.implode(',', $content_id).')';
+        
+        if(!empty($content_ids)) $where['id']=['$nin'=>$content_ids];
         
         $limit=[($page-1)*$limit,$limit];
 
         $contents=t('content')->where($where)->sort('id DESC')->limit($limit)->find();
-
+        
         foreach ($contents as $index=>$content) {
             // 记录已经阅读过
             t('user_view')->insert(['user_id'=>$uid,'content_id'=>$content['id']]);

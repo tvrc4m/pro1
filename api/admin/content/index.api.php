@@ -53,6 +53,7 @@ class IndexApi extends BaseAdminAuth{
         $type=$params['type'];
         $password=$params['password'];
         $url=$params['url'];
+        $description=$params['description'];
         $pub_time=$params['pub_time'];
 
         empty($pub_time) && $pub_time=date('Y-m-d H:i:s');
@@ -63,7 +64,7 @@ class IndexApi extends BaseAdminAuth{
 
         if(!empty($content)) $this->error("该内容已存在");
 
-        t('content')->insert(['author_id'=>$author_id,'type'=>$type,'url'=>$url,'password'=>$password,'date_pub'=>strtotime($pub_time)]);
+        t('content')->insert(['author_id'=>$author_id,'type'=>$type,'url'=>$url,'password'=>$password,'description'=>$description,'date_pub'=>strtotime($pub_time)]);
 
         $this->ok();
     }
@@ -75,6 +76,7 @@ class IndexApi extends BaseAdminAuth{
         $type=$params['type'];
         $password=$params['password'];
         $url=$params['url'];
+        $description=$params['description'];
         $pub_time=$params['pub_time'];
 
         empty($pub_time) && $pub_time=date('Y-m-d H:i:s');
@@ -85,7 +87,7 @@ class IndexApi extends BaseAdminAuth{
 
         if(empty($content)) $this->error("该内容不存在");
 
-        t('content')->where(['id'=>$content_id])->update(['author_id'=>$author_id,'type'=>$type,'url'=>$url,'password'=>$password,'date_pub'=>strtotime($pub_time)]);
+        t('content')->where(['id'=>$content_id])->update(['author_id'=>$author_id,'type'=>$type,'url'=>$url,'password'=>$password,'description'=>$description,'date_pub'=>strtotime($pub_time)]);
 
         $this->ok();
     }
@@ -117,6 +119,7 @@ class IndexApi extends BaseAdminAuth{
                 $type=$content['type'];
                 $password=$content['password'];
                 $url=$content['url'];
+                $description=$params['description'];
                 $pub_time=$params['pub_time'];
 
                 empty($pub_time) && $pub_time=date('Y-m-d H:i:s');
@@ -127,7 +130,7 @@ class IndexApi extends BaseAdminAuth{
 
                 if(!empty($content)) throw new Exception($url.'该内容已存在', 1);
 
-                t('content')->insert(['author_id'=>$author_id,'type'=>$type,'url'=>$url,'password'=>$password,'date_pub'=>strtotime($pub_time)]);
+                t('content')->insert(['author_id'=>$author_id,'type'=>$type,'url'=>$url,'password'=>$password,'description'=>$description,'date_pub'=>strtotime($pub_time)]);
             }
 
             t('content')->commit();
