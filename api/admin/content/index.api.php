@@ -119,8 +119,8 @@ class IndexApi extends BaseAdminAuth{
                 $type=$content['type'];
                 $password=$content['password'];
                 $url=$content['url'];
-                $description=$params['description'];
-                $pub_time=$params['pub_time'];
+                $description=$content['description'];
+                $pub_time=$content['pub_time'];
 
                 empty($pub_time) && $pub_time=date('Y-m-d H:i:s');
 

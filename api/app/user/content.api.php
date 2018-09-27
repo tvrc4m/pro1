@@ -64,7 +64,7 @@ class ContentApi extends BaseAuth {
 
         $content_ids=array_filter(array_unique(array_column($views,'content_id')));
 
-        $where=['author_id'=>['$in'=>$authors]];
+        $where=['author_id'=>['$in'=>$authors],'date_pub'=>['$lt'=>time()]];
         
         if(!empty($content_ids)) $where['id']=['$nin'=>$content_ids];
         

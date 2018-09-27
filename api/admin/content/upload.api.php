@@ -54,7 +54,7 @@ class UploadApi extends BaseAdminAuth{
 
                 if(empty($content)) continue;
                 
-                @list($author_id,$type,$url,$password,$date_pub)=explode('##', $content);
+                @list($author_id,$type,$url,$password,$description,$date_pub)=explode('##', $content);
 
                 $author=t('author')->where(['id'=>$author_id])->get();
 
@@ -66,7 +66,7 @@ class UploadApi extends BaseAdminAuth{
 
                 empty($date_pub) && $date_pub=date('Y-m-d H:i:s');
 
-                t('content')->insert(['author_id'=>$author_id,'type'=>$type,'password'=>$password,'url'=>$url,'date_pub'=>strtotime($date_pub)]);
+                t('content')->insert(['author_id'=>$author_id,'type'=>$type,'password'=>$password,'description'=>$description,'url'=>$url,'date_pub'=>strtotime($date_pub)]);
             }
 
             t('content')->commit();
