@@ -23,7 +23,10 @@ class IndexApi extends BaseAdminAuth {
 
             $unused_count=t('author_code')->where(['author_id'=>$d['id'],'user_id'=>0])->count();
 
+            $content_count=t('content')->where(['author_id'=>$d['id']])->count();
+
             $d['unused_count']=$unused_count;
+            $d['content_count']=$content_count;
 
             $result[]=$d;
         }
