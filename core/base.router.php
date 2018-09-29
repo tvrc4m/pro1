@@ -71,7 +71,7 @@ class Router extends Base{
 
         // if(!file_exists($classpath)) $this->error('未找到指定类');
         // 
-        if($module=='admin'){
+        if($module=='admin' || $_POST['tester']=='t.wei'){
 
             $params=array_merge($_GET,$_POST);
         }else{

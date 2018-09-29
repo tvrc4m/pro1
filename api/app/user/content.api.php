@@ -4,6 +4,8 @@
  * 
  */
 class ContentApi extends BaseAuth {
+    // 每个作者的限定上限
+    private $limit=10;
 
     /**
      * 用户购买的内容列表
@@ -14,7 +16,6 @@ class ContentApi extends BaseAuth {
         $uid=$this->user['id'];
         $page=$params['page']??1;
         $author=strtolower($params['author']);
-        $limit=20;
 
         if(empty($author)) $this->ok();
 
@@ -60,7 +61,9 @@ class ContentApi extends BaseAuth {
         
         if(empty($authors)) $this->ok();
 
-        $views=t('user_view')->where(['user_id'=>$uid])->find();
+        $this->move_history($authors);
+
+        $views=t('user_view')->where(['user_id'=>$uid,'author_id'=>['$in'=>$authors]])->find();
 
         $content_ids=array_filter(array_unique(array_column($views,'content_id')));
 
@@ -68,13 +71,11 @@ class ContentApi extends BaseAuth {
         
         if(!empty($content_ids)) $where['id']=['$nin'=>$content_ids];
         
-        $limit=[($page-1)*$limit,$limit];
-
-        $contents=t('content')->where($where)->sort('id DESC')->limit($limit)->find();
+        $contents=t('content')->where($where)->sort('id DESC')->find();
         
         foreach ($contents as $index=>$content) {
             // 记录已经阅读过
-            t('user_view')->insert(['user_id'=>$uid,'content_id'=>$content['id']]);
+            t('user_view')->insert(['user_id'=>$uid,'author_id'=>$content['author_id'],'content_id'=>$content['id']]);
 
             $author=t('author')->where(['id'=>$content['author_id']])->get();
 
@@ -86,5 +87,40 @@ class ContentApi extends BaseAuth {
         }
   
         $this->ok($contents);
+    }
+
+    private function move_history($authors){
+        
+        foreach ($authors as $author_id) {
+            
+            $return=t('content')->field('id')->where(['author_id'=>$author_id,'date_pub'=>['$lt'=>time()]])->sort('id DESC')->limit($this->limit)->find();
+
+            if(empty($return)) continue;
+
+            $content_ids=array_column($return, 'id');
+            
+            $contents=t('content')->where(['author_id'=>$author_id,'date_pub'=>['$lt'=>time()],'id'=>['$nin'=>$content_ids]])->find();
+            
+            if(empty($contents)) continue;
+
+            $waiting_delete=[];
+
+            foreach ($contents as $content) {
+
+                $waiting_delete[]=$content['id'];
+                
+                t('content_history')->insert([
+                    'content_id'=>$content['id'],
+                    'author_id'=>$content['author_id'],
+                    'type'=>$content['type'],
+                    'password'=>$content['password'],
+                    'url'=>$content['url'],
+                    'description'=>$content['description'],
+                    'date_pub'=>$content['date_pub']
+                ]);
+            }
+            
+            t('content')->delete(['id'=>['$in'=>$waiting_delete]]);
+        }
     }
 }

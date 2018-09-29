@@ -14,6 +14,7 @@ CREATE TABLE oa_content(
     password varchar(64) COMMENT '内容密码',
     url varchar(521) DEFAULT '' COMMENT '图片链接', 
     description varchar(5000) DEFAULT '' COMMENT '内容描述',
+    date_pub int COMMENT '发布日期',
     date_add int
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -105,7 +106,20 @@ CREATE TABLE oa_admin(
 ALTER TABLE oa_author ADD status tinyint DEFAULT 1;
 
 ALTER TABLE oa_author ADD ad_img varchar(255) DEFAULT '',ADD add_redirect varchar(255) DEFAULT '';
-ALTER TABLE oa_content ADD date_pub int COMMENT '发布日期';
 
 ALTER TABLE oa_setting add label varchar(64) NOT NULL COMMENT '说明';
 
+ALTER TABLE oa_user_view add author_id int DEFAULT 0;
+update oa_user_view uv,oa_content c set uv.author_id=c.author_id where uv.content_id=c.id;
+
+CREATE TABLE oa_content_history(
+    id int AUTO_INCREMENT PRIMARY KEY,
+    content_id int COMMENT '之前的内容id',
+    author_id int NOT NULL COMMENT '作者id',
+    type tinyint COMMENT '1:图文 2:视频',
+    password varchar(64) COMMENT '内容密码',
+    url varchar(521) DEFAULT '' COMMENT '图片链接', 
+    description varchar(5000) DEFAULT '' COMMENT '内容描述',
+    date_pub int COMMENT '之前内容的发布时间',
+    date_add int
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
